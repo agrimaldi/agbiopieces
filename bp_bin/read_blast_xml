@@ -1,0 +1,86 @@
+#!/usr/bin/env python
+# -*- coding:utf-8 -*-
+
+# Copyright (C) 2010 Alexis Grimaldi.
+
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+
+# http://www.gnu.org/copyleft/gpl.html
+
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>> DESCRIPTION <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+# Read BLAST records in XML format from one or more files..
+
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+import os
+import sys
+sys.path.append(os.path.join(os.environ['BP_DIR'], 'code_python'))
+from Agrim.args import *
+from Agrim.ncbi import *
+
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+def main():
+
+    parser = Reader_OptionParser()
+    
+    (opts, args) = parser.parse_args()
+
+    if len(sys.argv) == 1:
+        parser.print_usage()
+        return
+
+    if opts.usage:
+        parser.print_help()
+        return
+
+    if opts.data_in:
+        if is_glob(opts.data_in):
+            infiles = glob.iglob(os.path.expanduser(opts.data_in))
+        else:
+            infiles = (os.path.expanduser(f) for f in opts.data_in.split(','))
+    elif opts.stream_in:
+        infiles = [sys.stdin]
+    else:
+        parser.error()
+        
+    for infile in infiles:
+        parser = BlastXMLParser(infile, opts.num)
+        records = parser.parse()
+        for record in records:
+            print record
+
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+if __name__ == '__main__':
+    logger = BioPieceLogger()
+    logger.start()
+    try:
+        main()
+    except KeyboardInterrupt:
+        logger.end(-1)
+        sys.stderr.write("\nProgram 'read_blast_xml' interrupted " \
+                         "(ctrl-c was pressed)  -  Please wait for " \
+                         "temporary data to be removed\n")
+        sys.exit(-1)
+    except Exception as e:
+        logger.end(-2)
+        print e
+        sys.exit(-2)
+    logger.end(0)
+
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+

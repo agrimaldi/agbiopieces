@@ -1,0 +1,103 @@
+﻿#summary Read BLAST records in XML format from one or more files.
+
+=Biopiece: read_blast_xml=
+
+==Description==
+
+[lowercase_seq] read tabular BLAST format created with `blastall` and the
+`-m 7` switch - or with blast+ and the `-outfmt 5` switch.
+Each column in the table corresponds to the following keys:
+
+  # Q_ID        -  Query ID.
+  # S_ID        -  Subject ID.
+  # IDENT       -  Identity(%).
+  # ALIGN_LEN   -  Alignment length.
+  # MISMATCHES  -  Number of mismatches.
+  # GAPS        -  Number of gaps.
+  # Q_BEG       -  Query begin.
+  # Q_END       -  Query end.
+  # S_BEG       -  Subject begin.
+  # S_END       -  Subject end.
+  # E_VAL       -  Expect value.
+  # BIT_SCORE   -  Bit score.
+
+Furthermore, six extra keys are added to the record:
+
+  * STRAND      -  Strand.
+  * REC_TYPE    -  Record type.
+  * N_IDENT     -  Number of perfect matches.
+  * POSITIVE    -  Number of positive scoring substitutions
+  * Q_SEQ       -  Query sequence
+  * S_SEQ       -  Subject sequence
+  * M_SEQ       -  Midline
+
+==Usage==
+
+{{{
+read_blast_xml [options] -i <BLAST XML file(s)>
+}}}
+
+==Options==
+
+{{{
+[-?          | --help]               #  Print full usage description.
+[-i <files!> | --data_in=<files!>]   #  Comma separated list of files or glob expression to read.
+[-n <uint>   | --num=<uint>]         #  Limit number of records to read.
+[-I <file!>  | --stream_in=<file!>]  #  Read input from stream file   -  Default=STDIN
+[-O <file>   | --stream_out=<file>]  #  Write output to stream file   -  Default=STDOUT
+[-v          | --verbose]            #  Verbose output.
+}}}
+
+==Examples==
+
+To read all BLAST entries from a file:
+
+{{{
+read_blast_xml -i test.blast.xml
+}}}
+
+To read in only 10 records from a BLAST file:
+
+{{{
+read_blast_xml -n 10 -i test.blast.xml
+}}}
+
+To read all BLAST entries from multiple files:
+
+{{{
+read_blast_xml -i test1.blast.xml,test2.blast.xml
+}}}
+
+To read BLAST entries from multiple files using a glob expression:
+
+{{{
+read_blast_xml -i '*.blast.xml'
+}}}
+
+
+==See also==
+
+[blast_seq]
+
+[write_blast]
+
+==Author==
+
+Alexis Grimaldi
+
+sopo.dev@gmail.com
+
+April 2010
+
+==License==
+
+GNU General Public License version 2
+
+http://www.gnu.org/copyleft/gpl.html
+
+==Help==
+
+[read_blast_xml] is part of the Biopieces framework.
+
+http://www.biopieces.org
+
